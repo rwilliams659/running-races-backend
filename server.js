@@ -56,3 +56,13 @@ app.patch('/api/v1/marathons/:id', (request, response) => {
   app.locals.marathons.splice(raceToUpdateIndex, 1, updatedRace);
   response.status(201).json(updatedRace);
 })
+
+app.delete('/api/v1/marathons/:id', (request, response) => {
+  const id = +request.params.id;
+  const raceToDelete = app.locals.marathons.find(marathon => marathon.id === id);
+  if (!raceToDelete) {
+    return response.status(404).json({ error: `Sorry, cannot find a marathon with id of ${id}` })
+  }
+  app.locals.marathons = app.locals.marathons.filter(marathon => marathon.id !== id)
+  response.status(200).json(raceToDelete); 
+})
