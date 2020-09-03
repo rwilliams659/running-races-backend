@@ -39,4 +39,20 @@ app.post('/api/v1/marathons', (request, response) => {
   response.status(201).json(newMarathon);
 })
 
-// One POST endpoint to create new objects in your data set.This endpoint should check every property in the resource being passed in to make sure that all of the properties required to make a new resource were provided.If the user does not provide those required properties, you should send back an error with a message detailing why their request could not be completed.
+app.patch('/api/v1/marathons/:id', (request, response) => {
+  const id = +request.params.id;
+  const raceToUpdate = app.locals.marathons.find(marathon => marathon.id === id); 
+  if (!raceToUpdate) {
+    return response.status(404).json({ error: `Sorry, we couldn't find a race with an id of ${id}` })
+  };
+  const existingProperties = ['name', 'location', 'maxRunners', 'date'];
+  const propertyToUpdate = Object.keys(request.body)[0]; 
+  if (!existingProperties.includes(propertyToUpdate)) {
+    return response.status(422).json({error: `Unsuccessful PATCH. Property of ${propertyToUpdate} does not exist.`})
+  };
+  const raceToUpdateIndex = app.locals.marathons.indexOf(raceToUpdate)
+  const updatedRace = raceToUpdate;
+  updatedRace[propertyToUpdate] = request.body[propertyToUpdate];
+  app.locals.marathons.splice(raceToUpdateIndex, 1, updatedRace);
+  response.status(201).json(updatedRace);
+})
